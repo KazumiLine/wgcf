@@ -1,4 +1,4 @@
-package shared
+package wgcf
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"math"
 	"strings"
 
-	"github.com/ViRb3/wgcf/cloudflare"
-	"github.com/ViRb3/wgcf/config"
-	"github.com/ViRb3/wgcf/util"
+	"github.com/KazumiLine/wgcf/cloudflare"
+	"github.com/KazumiLine/wgcf/config"
+	"github.com/KazumiLine/wgcf/util"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"

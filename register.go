@@ -1,49 +1,22 @@
-package register
+package wgcf
 
 import (
 	"fmt"
 	"log"
 
-	"github.com/ViRb3/wgcf/cloudflare"
-	. "github.com/ViRb3/wgcf/cmd/shared"
-	"github.com/ViRb3/wgcf/config"
-	"github.com/ViRb3/wgcf/util"
-	"github.com/ViRb3/wgcf/wireguard"
+	"github.com/KazumiLine/wgcf/cloudflare"
+	"github.com/KazumiLine/wgcf/config"
+	"github.com/KazumiLine/wgcf/wireguard"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var deviceName string
-var deviceModel string
-var existingKey string
-var acceptedTOS = false
-var shortMsg = "Registers a new Cloudflare Warp device and creates a new account, preparing it for connection"
-
-var Cmd = &cobra.Command{
-	Use:   "register",
-	Short: shortMsg,
-	Long:  FormatMessage(shortMsg, ``),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := registerAccount(); err != nil {
-			log.Fatal(util.GetErrorMessage(err))
-		}
-	},
-}
-
-func init() {
-	Cmd.PersistentFlags().StringVarP(&deviceName, "name", "n", "", "Device name displayed under the 1.1.1.1 app (defaults to random)")
-	Cmd.PersistentFlags().StringVarP(&deviceModel, "model", "m", "PC", "Device model displayed under the 1.1.1.1 app")
-	Cmd.PersistentFlags().StringVarP(&existingKey, "key", "k", "", "Base64 private key used to authenticate your device over WireGuard (defaults to random)")
-	Cmd.PersistentFlags().BoolVar(&acceptedTOS, "accept-tos", false, "Accept Cloudflare's Terms of Service non-interactively")
-}
-
-func registerAccount() error {
+func registerAccount(deviceName string, deviceModel string, existingKey string, acceptedTOS bool) error {
 	if IsConfigValidAccount() {
 		return errors.New("existing account detected")
 	}
-	if accepted, err := checkTOS(); err != nil || !accepted {
+	if accepted, err := checkTOS(acceptedTOS); err != nil || !accepted {
 		return err
 	}
 
@@ -95,7 +68,7 @@ func registerAccount() error {
 	return nil
 }
 
-func checkTOS() (bool, error) {
+func checkTOS(acceptedTOS bool) (bool, error) {
 	if !acceptedTOS {
 		fmt.Println("This project is in no way affiliated with Cloudflare")
 		fmt.Println("Cloudflare's Terms of Service: https://www.cloudflare.com/application/terms/")

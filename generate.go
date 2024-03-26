@@ -1,37 +1,16 @@
-package generate
+package wgcf
 
 import (
 	"log"
 
-	"github.com/ViRb3/wgcf/cloudflare"
-	. "github.com/ViRb3/wgcf/cmd/shared"
-	"github.com/ViRb3/wgcf/config"
-	"github.com/ViRb3/wgcf/util"
-	"github.com/ViRb3/wgcf/wireguard"
+	"github.com/KazumiLine/wgcf/cloudflare"
+	"github.com/KazumiLine/wgcf/config"
+	"github.com/KazumiLine/wgcf/wireguard"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var profileFile string
-var shortMsg = "Generates a WireGuard profile from the current Cloudflare Warp account"
-
-var Cmd = &cobra.Command{
-	Use:   "generate",
-	Short: shortMsg,
-	Long:  FormatMessage(shortMsg, ``),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := generateProfile(); err != nil {
-			log.Fatal(util.GetErrorMessage(err))
-		}
-	},
-}
-
-func init() {
-	Cmd.PersistentFlags().StringVarP(&profileFile, "profile", "p", "wgcf-profile.conf", "WireGuard profile file")
-}
-
-func generateProfile() error {
+func generateProfile(profileFile string) error {
 	if !IsConfigValidAccount() {
 		return errors.New("no account detected")
 	}

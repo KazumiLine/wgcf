@@ -1,38 +1,14 @@
-package update
+package wgcf
 
 import (
 	"log"
 
-	"github.com/ViRb3/wgcf/cloudflare"
-	. "github.com/ViRb3/wgcf/cmd/shared"
-	"github.com/ViRb3/wgcf/config"
-	"github.com/ViRb3/wgcf/util"
+	"github.com/KazumiLine/wgcf/cloudflare"
+	"github.com/KazumiLine/wgcf/config"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 )
 
-var deviceName string
-
-var shortMsg = "Updates the current Cloudflare Warp account, preparing it for connection"
-
-var Cmd = &cobra.Command{
-	Use:   "update",
-	Short: shortMsg,
-	Long: FormatMessage(shortMsg, `
-If a new/different license key is provided, the current device will be bound to the new key and its parent account. 
-Please note that there is a maximum limit of 5 active devices linked to the same account at a given time.`),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := updateAccount(); err != nil {
-			log.Fatal(util.GetErrorMessage(err))
-		}
-	},
-}
-
-func init() {
-	Cmd.PersistentFlags().StringVarP(&deviceName, "name", "n", "", "Device name displayed under the 1.1.1.1 app")
-}
-
-func updateAccount() error {
+func updateAccount(deviceName string) error {
 	if !IsConfigValidAccount() {
 		return errors.New("no account detected")
 	}
