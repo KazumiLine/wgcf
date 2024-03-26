@@ -20,10 +20,6 @@ Endpoint = {{ .Endpoint }}
 `
 
 type Profile struct {
-	profileString string
-}
-
-type ProfileData struct {
 	PrivateKey string
 	Address1   string
 	Address2   string
@@ -31,15 +27,7 @@ type ProfileData struct {
 	Endpoint   string
 }
 
-func NewProfile(data *ProfileData) (*Profile, error) {
-	profileString, err := generateProfile(data)
-	if err != nil {
-		return nil, err
-	}
-	return &Profile{profileString: profileString}, nil
-}
-
-func generateProfile(data *ProfileData) (string, error) {
+func GenerateProfile(data *Profile) (string, error) {
 	t, err := template.New("").Parse(profileTemplate)
 	if err != nil {
 		return "", err
@@ -52,5 +40,9 @@ func generateProfile(data *ProfileData) (string, error) {
 }
 
 func (p *Profile) Save(profileFile string) error {
-	return ioutil.WriteFile(profileFile, []byte(p.profileString), 0600)
+	profileData, err := GenerateProfile(p)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(profileFile, []byte(profileData), 0600)
 }

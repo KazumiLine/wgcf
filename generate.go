@@ -25,15 +25,12 @@ func GenerateProfile(profileFile string) error {
 		return err
 	}
 
-	profile, err := wireguard.NewProfile(&wireguard.ProfileData{
+	profile := &wireguard.Profile{
 		PrivateKey: viper.GetString(config.PrivateKey),
 		Address1:   thisDevice.Config.Interface.Addresses.V4,
 		Address2:   thisDevice.Config.Interface.Addresses.V6,
 		PublicKey:  thisDevice.Config.Peers[0].PublicKey,
 		Endpoint:   thisDevice.Config.Peers[0].Endpoint.Host,
-	})
-	if err != nil {
-		return err
 	}
 	if err := profile.Save(profileFile); err != nil {
 		return err
@@ -42,4 +39,25 @@ func GenerateProfile(profileFile string) error {
 	printDeviceData(thisDevice, boundDevice)
 	log.Println("Successfully generated WireGuard profile:", profileFile)
 	return nil
+}
+
+func Generate() (*wireguard.Profile, error) {
+	if !IsConfigValidAccount() {
+		return nil, errors.New("no account detected")
+	}
+
+	ctx := CreateContext()
+	thisDevice, err := cloudflare.GetSourceDevice(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	profile := &wireguard.Profile{
+		PrivateKey: viper.GetString(config.PrivateKey),
+		Address1:   thisDevice.Config.Interface.Addresses.V4,
+		Address2:   thisDevice.Config.Interface.Addresses.V6,
+		PublicKey:  thisDevice.Config.Peers[0].PublicKey,
+		Endpoint:   thisDevice.Config.Peers[0].Endpoint.Host,
+	}
+	return profile, nil
 }
