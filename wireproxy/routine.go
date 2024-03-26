@@ -3,6 +3,7 @@ package wireproxy
 import (
 	"context"
 	"crypto/subtle"
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -15,6 +16,7 @@ import (
 	"github.com/things-go/go-socks5"
 	"github.com/things-go/go-socks5/bufferpool"
 
+	"net/http"
 	"net/netip"
 
 	"golang.zx2c4.com/wireguard/tun/netstack"
@@ -33,6 +35,26 @@ type CredentialValidator struct {
 type VirtualTun struct {
 	Tnet      *netstack.Net
 	SystemDNS bool
+}
+
+type IPInfo struct {
+	IP      string `json:"ip"`
+	Country string `json:"country"`
+	ASN     struct {
+		Asnum   int    `json:"asnum"`
+		OrgName string `json:"org_name"`
+	} `json:"asn"`
+	Geo struct {
+		City       string  `json:"city"`
+		Region     string  `json:"region"`
+		RegionName string  `json:"region_name"`
+		PostalCode string  `json:"postal_code"`
+		Latitude   float64 `json:"latitude"`
+		Longitude  float64 `json:"longitude"`
+		TZ         string  `json:"tz"`
+		LumCity    string  `json:"lum_city"`
+		LumRegion  string  `json:"lum_region"`
+	} `json:"geo"`
 }
 
 // RoutineSpawner spawns a routine (e.g. socks5, tcp static routes) after the configuration is parsed
@@ -143,6 +165,20 @@ func (config *Socks5Config) SpawnRoutine(vt *VirtualTun) {
 
 	if err := server.ListenAndServe("tcp", config.BindAddress); err != nil {
 		log.Fatal(err)
+	}
+}
+
+// GetIPInfo returns the IP information of the client
+func (vt *VirtualTun) GetIPInfo() (ipinfo *IPInfo, err error) {
+	client := &http.Client{Transport: &http.Transport{
+		DialContext: vt.Tnet.DialContext,
+	}}
+	ipinfo = &IPInfo{}
+	if res, err := client.Get("https://lumtest.com/myip.json"); err != nil {
+		return nil, err
+	} else {
+		defer res.Body.Close()
+		return ipinfo, json.NewDecoder(res.Body).Decode(&ipinfo)
 	}
 }
 
