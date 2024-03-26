@@ -8,11 +8,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func UpdateAccount(deviceName string) error {
+func UpdateAccount(licenseKey string, deviceName string) error {
 	if !IsConfigValidAccount() {
 		return errors.New("no account detected")
 	}
 	ctx := CreateContext()
+	ctx.LicenseKey = licenseKey
 	thisDevice, err := cloudflare.GetSourceDevice(ctx)
 	if err != nil {
 		return err
