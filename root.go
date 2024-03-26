@@ -6,19 +6,14 @@ import (
 
 	"github.com/KazumiLine/wgcf/config"
 
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string = "wgcf-account.toml"
 
-func init() {
-	cobra.OnInitialize(initConfig)
-}
-
 var unsupportedConfigError viper.UnsupportedConfigError
 
-func initConfig() {
+func init() {
 	initConfigDefaults()
 	viper.SetConfigFile(cfgFile)
 	viper.SetEnvPrefix("WGCF")
