@@ -1,11 +1,14 @@
 package wgcf
 
 import (
+	"os"
+	"syscall"
+
 	"github.com/KazumiLine/wgcf/wireproxy"
 	"golang.zx2c4.com/wireguard/device"
 )
 
-func GenerateTunnel() (*wireproxy.VirtualTun, error) {
+func GenerateTunnel(silent bool) (*wireproxy.VirtualTun, error) {
 	prof, err := Generate()
 	if err != nil {
 		return nil, err
@@ -14,5 +17,11 @@ func GenerateTunnel() (*wireproxy.VirtualTun, error) {
 	if err != nil {
 		return nil, err
 	}
-	return wireproxy.StartWireguard(conf.Device, device.LogLevelSilent)
+
+	os.Stdout = os.NewFile(uintptr(syscall.Stderr), "/dev/stderr")
+	logLevel := device.LogLevelVerbose
+	if silent {
+		logLevel = device.LogLevelSilent
+	}
+	return wireproxy.StartWireguard(conf.Device, logLevel)
 }
