@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func trace() error {
+func Trace() error {
 	response, err := http.Get("https://cloudflare.com/cdn-cgi/trace")
 	if err != nil {
 		return err

@@ -8,11 +8,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-func updateAccount(deviceName string) error {
+func UpdateAccount(deviceName string) error {
 	if !IsConfigValidAccount() {
 		return errors.New("no account detected")
 	}
-
 	ctx := CreateContext()
 	thisDevice, err := cloudflare.GetSourceDevice(ctx)
 	if err != nil {
@@ -22,7 +21,6 @@ func updateAccount(deviceName string) error {
 	if err != nil {
 		return err
 	}
-
 	boundDevice, err := cloudflare.GetSourceBoundDevice(ctx)
 	if err != nil {
 		return err
@@ -33,7 +31,6 @@ func updateAccount(deviceName string) error {
 			return err
 		}
 	}
-
 	boundDevice, err = cloudflare.UpdateSourceBoundDeviceActive(ctx, true)
 	if err != nil {
 		return err
@@ -41,8 +38,7 @@ func updateAccount(deviceName string) error {
 	if !boundDevice.Active {
 		return errors.New("failed activating device")
 	}
-
-	PrintDeviceData(thisDevice, boundDevice)
+	printDeviceData(thisDevice, boundDevice)
 	log.Println("Successfully updated Cloudflare Warp account")
 	return nil
 }
@@ -56,11 +52,9 @@ func ensureLicenseKeyUpToDate(ctx *config.Context, thisDevice *cloudflare.Device
 }
 
 func updateLicenseKey(ctx *config.Context) (*cloudflare.Account, *cloudflare.Device, error) {
-
 	if _, err := cloudflare.UpdateLicenseKey(ctx); err != nil {
 		return nil, nil, err
 	}
-
 	account, err := cloudflare.GetAccount(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -69,10 +63,8 @@ func updateLicenseKey(ctx *config.Context) (*cloudflare.Account, *cloudflare.Dev
 	if err != nil {
 		return nil, nil, err
 	}
-
 	if account.License != ctx.LicenseKey {
 		return nil, nil, errors.New("failed to update license key")
 	}
-
 	return account, thisDevice, nil
 }

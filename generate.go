@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func generateProfile(profileFile string) error {
+func GenerateProfile(profileFile string) error {
 	if !IsConfigValidAccount() {
 		return errors.New("no account detected")
 	}
@@ -39,7 +39,7 @@ func generateProfile(profileFile string) error {
 		return err
 	}
 
-	PrintDeviceData(thisDevice, boundDevice)
+	printDeviceData(thisDevice, boundDevice)
 	log.Println("Successfully generated WireGuard profile:", profileFile)
 	return nil
 }

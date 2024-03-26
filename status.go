@@ -5,21 +5,19 @@ import (
 	"github.com/pkg/errors"
 )
 
-func status() error {
+func Status() (*cloudflare.Device, *cloudflare.BoundDevice, error) {
 	if !IsConfigValidAccount() {
-		return errors.New("no valid account detected")
+		return nil, nil, errors.New("no valid account detected")
 	}
-
 	ctx := CreateContext()
 	thisDevice, err := cloudflare.GetSourceDevice(ctx)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	boundDevice, err := cloudflare.GetSourceBoundDevice(ctx)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-
-	PrintDeviceData(thisDevice, boundDevice)
-	return nil
+	printDeviceData(thisDevice, boundDevice)
+	return thisDevice, boundDevice, nil
 }

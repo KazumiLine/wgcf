@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func FormatMessage(shortMessage string, longMessage string) string {
+func formatMessage(shortMessage string, longMessage string) string {
 	if longMessage != "" {
 		if strings.HasPrefix(longMessage, "\n") {
 			longMessage = longMessage[1:]
@@ -45,7 +45,7 @@ func CreateContext() *config.Context {
 	return &ctx
 }
 
-func F32ToHumanReadable(number float32) string {
+func f32ToHumanReadable(number float32) string {
 	for i := 8; i >= 0; i-- {
 		humanReadable := number / float32(math.Pow(1024, float64(i)))
 		if humanReadable >= 1 && humanReadable < 1024 {
@@ -55,15 +55,15 @@ func F32ToHumanReadable(number float32) string {
 	return fmt.Sprintf("%.2f B", number)
 }
 
-func PrintDeviceData(thisDevice *cloudflare.Device, boundDevice *cloudflare.BoundDevice) {
+func printDeviceData(thisDevice *cloudflare.Device, boundDevice *cloudflare.BoundDevice) {
 	log.Println("=======================================")
 	log.Printf("%-13s : %s\n", "Device name", *boundDevice.Name)
 	log.Printf("%-13s : %s\n", "Device model", thisDevice.Model)
 	log.Printf("%-13s : %t\n", "Device active", boundDevice.Active)
 	log.Printf("%-13s : %s\n", "Account type", thisDevice.Account.AccountType)
 	log.Printf("%-13s : %s\n", "Role", thisDevice.Account.Role)
-	log.Printf("%-13s : %s\n", "Premium data", F32ToHumanReadable(thisDevice.Account.PremiumData))
-	log.Printf("%-13s : %s\n", "Quota", F32ToHumanReadable(thisDevice.Account.Quota))
+	log.Printf("%-13s : %s\n", "Premium data", f32ToHumanReadable(thisDevice.Account.PremiumData))
+	log.Printf("%-13s : %s\n", "Quota", f32ToHumanReadable(thisDevice.Account.Quota))
 	log.Println("=======================================")
 }
 

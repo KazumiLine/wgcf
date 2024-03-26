@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func registerAccount(deviceName string, deviceModel string, existingKey string, acceptedTOS bool) error {
+func RegisterAccount(deviceName string, deviceModel string, existingKey string, acceptedTOS bool) error {
 	if IsConfigValidAccount() {
 		return errors.New("existing account detected")
 	}
@@ -63,7 +63,7 @@ func registerAccount(deviceName string, deviceModel string, existingKey string, 
 		return errors.New("failed to activate device")
 	}
 
-	PrintDeviceData(thisDevice, boundDevice)
+	printDeviceData(thisDevice, boundDevice)
 	log.Println("Successfully created Cloudflare Warp account")
 	return nil
 }
