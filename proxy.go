@@ -18,9 +18,9 @@ func GenerateTunnel(silent bool) (*wireproxy.VirtualTun, error) {
 		return nil, err
 	}
 
-	os.Stdout = os.NewFile(uintptr(syscall.Stderr), "/dev/stderr")
 	logLevel := device.LogLevelVerbose
 	if silent {
+		// os.Stdout = os.NewFile(uintptr(syscall.Stderr), "/dev/stderr")
 		logLevel = device.LogLevelSilent
 	}
 	return wireproxy.StartWireguard(conf.Device, logLevel)
