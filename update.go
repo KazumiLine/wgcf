@@ -1,11 +1,14 @@
 package wgcf
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/KazumiLine/wgcf/cloudflare"
 	"github.com/KazumiLine/wgcf/config"
+	"github.com/KazumiLine/wgcf/wireguard"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 func UpdateAccount(licenseKey string, deviceName string) error {
@@ -68,4 +71,31 @@ func updateLicenseKey(ctx *config.Context) (*cloudflare.Account, *cloudflare.Dev
 		return nil, nil, errors.New("failed to update license key")
 	}
 	return account, thisDevice, nil
+}
+
+func GenerateWARPPlus() (licenseKey string, err error) {
+	privateKey, err := wireguard.NewPrivateKey()
+	device, err := cloudflare.Register(privateKey.Public(), "PC")
+	viper.Set(config.PrivateKey, privateKey.String())
+	viper.Set(config.DeviceId, device.Id)
+	viper.Set(config.AccessToken, device.Token)
+	viper.Set(config.LicenseKey, device.Account.License)
+	viper.WriteConfig()
+	account1 := CreateContext()
+	privateKey, err = wireguard.NewPrivateKey()
+	device, err = cloudflare.Register(privateKey.Public(), "PC")
+	viper.Set(config.PrivateKey, privateKey.String())
+	viper.Set(config.DeviceId, device.Id)
+	viper.Set(config.AccessToken, device.Token)
+	viper.Set(config.LicenseKey, device.Account.License)
+	viper.WriteConfig()
+	account2 := CreateContext()
+	fmt.Println(cloudflare.UpdateReferrer(account1, account2.DeviceId))
+	oldLicenseKey := account1.LicenseKey
+	account1.LicenseKey = "hW17X52Z-1hE542mf-e185pLr6"
+	updateLicenseKey(account1)
+	account1.LicenseKey = oldLicenseKey
+	updateLicenseKey(account1)
+	fmt.Println(cloudflare.GetAccount(account1))
+	return oldLicenseKey, nil
 }

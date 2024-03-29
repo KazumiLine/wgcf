@@ -13,7 +13,7 @@ import (
 
 const (
 	ApiUrl     = "https://api.cloudflareclient.com"
-	ApiVersion = "v0a1922"
+	ApiVersion = "v0a2223"
 )
 
 var (
@@ -70,6 +70,17 @@ func Register(publicKey *wireguard.Key, deviceModel string) (openapi.Register200
 			Type:      "Android",
 		}).Execute()
 	return result, err
+}
+
+func UpdateReferrer(ctx *config.Context, referrer string) (*openapi.UpdateAccount200Response, error) {
+	result, _, err := globalClientAuth(ctx.AccessToken).DefaultApi.
+		UpdateAccount(nil, ctx.DeviceId, ApiVersion).
+		UpdateAccountRequest(openapi.UpdateAccountRequest{Referrer: referrer}).
+		Execute()
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 type Device openapi.UpdateSourceDevice200Response

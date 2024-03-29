@@ -16,7 +16,8 @@ import (
 
 // UpdateAccountRequest struct for UpdateAccountRequest
 type UpdateAccountRequest struct {
-	License string `json:"license"`
+	License string `json:"license,omitempty"`
+	Referrer string `json:"referrer,omitempty"`
 }
 
 // NewUpdateAccountRequest instantiates a new UpdateAccountRequest object

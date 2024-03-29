@@ -686,8 +686,11 @@ components:
       properties:
         license:
           type: string
+        referrer:
+          type: string
       required:
       - license
+      - referrer
       type: object
     UpdateBoundDevice_200_Response:
       example:
