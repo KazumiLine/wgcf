@@ -1,4 +1,4 @@
-module wgcf
+module github.com/KazumiLine/wgcf
 
 go 1.18
 

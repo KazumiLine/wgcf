@@ -1,9 +1,6 @@
 package wgcf
 
 import (
-	"os"
-	"syscall"
-
 	"github.com/KazumiLine/wgcf/wireproxy"
 	"golang.zx2c4.com/wireguard/device"
 )
